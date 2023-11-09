@@ -1,4 +1,5 @@
-﻿using CRM.Shared.Entities;
+﻿using CRM.Shared.DTOs;
+using CRM.Shared.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace CRM.API.Helpers
@@ -6,13 +7,11 @@ namespace CRM.API.Helpers
     public interface IUserHelper
     {
         Task<Users> GetUserAsync(string email);
-
         Task<IdentityResult> AddUserAsync(Users user, string password);
-
         Task CheckRoleAsync(string roleName);
         Task AddUserToRoleAsync(Users user, string roleName);
-
         Task<bool> IsUserInRoleAsync(Users user, string roleName);
-
+        Task<SignInResult> LoginAsync(LoginDTO model);
+        Task LogoutAsync();
     }
 }

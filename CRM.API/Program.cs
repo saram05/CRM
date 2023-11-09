@@ -1,9 +1,12 @@
 using CRM.API.Data;
 using CRM.API.Helpers;
 using CRM.Shared.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +40,18 @@ builder.Services.AddIdentity<Users, IdentityRole>(x =>
 })
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
+
+/*Agregamos la configuración de para utilizar los token*/
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(x => x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwtKey"]!)),
+        ClockSkew = TimeSpan.Zero
+    });
 
 
 
