@@ -45,30 +45,16 @@ namespace CRM.Frontend.Repositories
 
         public async Task<HttpResponseWrapper<TResponse>> Post<T, TResponse>(string url, T model)
         {
-            try
+            var messageJSON = JsonSerializer.Serialize(model);
+            var messageContet = new StringContent(messageJSON, Encoding.UTF8, "application/json");
+            var responseHttp = await _httpClient.PostAsync(url, messageContet);
+            if (responseHttp.IsSuccessStatusCode)
             {
-                var messageJSON = JsonSerializer.Serialize(model);
-                var messageContet = new StringContent(messageJSON, Encoding.UTF8, "application/json");
-                var responseHttp = await _httpClient.PostAsync(url, messageContet);
-                if (responseHttp.IsSuccessStatusCode)
-                {
-                    var response = await UnserializeAnswer<TResponse>(responseHttp, _jsonDefaultOptions);
-                    return new HttpResponseWrapper<TResponse>(response, false, responseHttp);
-                }
-
-                return new HttpResponseWrapper<TResponse>(default, !responseHttp.IsSuccessStatusCode, responseHttp);
-
-                // Resto del código...
-            }
-            catch (Exception ex)
-            {
-                // Registra o imprime la excepción para diagnóstico.
-                Console.WriteLine($"Error al enviar la solicitud: {ex.Message}");
-                // También puedes lanzar la excepción nuevamente si es necesario.
-                throw;
+                var response = await UnserializeAnswer<TResponse>(responseHttp, _jsonDefaultOptions);
+                return new HttpResponseWrapper<TResponse>(response, false, responseHttp);
             }
 
-            
+            return new HttpResponseWrapper<TResponse>(default, !responseHttp.IsSuccessStatusCode, responseHttp);
         }
 
         public async Task<HttpResponseWrapper<object>> Delete(string url)
