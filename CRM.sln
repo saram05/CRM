@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.Shared", "CRM.Shared\CRM.Shared.csproj", "{C83A8DA7-7EEA-466D-8E69-05804EB753AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRM.Shared", "CRM.Shared\CRM.Shared.csproj", "{C83A8DA7-7EEA-466D-8E69-05804EB753AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.API", "CRM.API\CRM.API.csproj", "{DACC2CC3-430B-4CDD-BB9A-BF6A1DE11208}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRM.API", "CRM.API\CRM.API.csproj", "{DACC2CC3-430B-4CDD-BB9A-BF6A1DE11208}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.Frontend", "CRM.Frontend\CRM.Frontend.csproj", "{2F3D60C8-F59A-4874-A4DB-F14EEEE39AC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRM.Frontend", "CRM.Frontend\CRM.Frontend.csproj", "{2F3D60C8-F59A-4874-A4DB-F14EEEE39AC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
