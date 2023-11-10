@@ -41,8 +41,10 @@ namespace CRM.API.Helpers
         }
         public async Task<Users> GetUserAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            return user!;
         }
+
         public async Task<bool> IsUserInRoleAsync(Users user, string roleName)
         {
             return await _userManager.IsInRoleAsync(user, roleName);
@@ -55,5 +57,20 @@ namespace CRM.API.Helpers
         {
             await _signInManager.SignOutAsync();
         }
+        public async Task<Users> GetUserAsync(Guid userId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId.ToString());
+            return user!;
+        }
+        public async Task<IdentityResult> ChangePasswordAsync(Users user, string currentPassword, string newPassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        }
+        public async Task<IdentityResult> UpdateUserAsync(Users user)
+        {
+            return await _userManager.UpdateAsync(user);
+        }
+
+
     }
 }

@@ -13,5 +13,9 @@ namespace CRM.API.Helpers
         Task<bool> IsUserInRoleAsync(Users user, string roleName);
         Task<SignInResult> LoginAsync(LoginDTO model);
         Task LogoutAsync();
+        Task<IdentityResult> ChangePasswordAsync(Users user, string currentPassword, string newPassword);
+        Task<IdentityResult> UpdateUserAsync(Users user);
+        Task<Users> GetUserAsync(Guid userId);
+
     }
 }
