@@ -1,0 +1,32 @@
+﻿@page "/clients/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<h3>Crear País</h3>
+
+<ClientForm @ref="clientForm" Client="client" OnValidSubmit="Create" ReturnAction="Return" />
+
+@code {
+    private Client client = new();
+    private ClientForm? clientForm;
+
+    private async Task Create()
+    {
+        var responseHttp = await repository.Post("/api/clients", client);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message);
+            return;
+        }
+        clientForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo("/clients");
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/clients");
+    }
+}
+

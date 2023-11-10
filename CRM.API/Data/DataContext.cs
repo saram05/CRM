@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using CRM.Shared.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Data;
 
 namespace CRM.API.Data
 {
@@ -10,7 +11,12 @@ namespace CRM.API.Data
         {
 
         }
-    
+        public DbSet<Client> Clients { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Client>().HasIndex(c => c.Name).IsUnique();
+        }
 
     }
 }
