@@ -12,6 +12,10 @@ namespace CRM.API.Data
 
         }
         public DbSet<Client> Clients { get; set; }
+
+        public DbSet<Oportunity> Oportunities { get; set; }
+
+        public DbSet<Activity> Activities { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
