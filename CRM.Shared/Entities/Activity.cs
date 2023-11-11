@@ -32,5 +32,6 @@ namespace CRM.Shared.Entities
         [MaxLength(4, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         public DateTime FinishDate { get; set; } = DateTime.Now!;
         public Oportunity? Oportunity{ get; set; }
+        public int OportunityId { get; set; }
     }
 }

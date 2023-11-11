@@ -15,18 +15,7 @@ namespace CRM.API.Controllers
         {
             _context = context;
         }
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult> Get(int id)
-        {
-            var client = await _context.Clients.FirstOrDefaultAsync(x => x.Id == id);
-            if (client is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(client);
-        }
-
+        
         [HttpPut]
         public async Task<ActionResult> Put(Client client)
         {
@@ -55,6 +44,31 @@ namespace CRM.API.Controllers
         {
             return Ok(await _context.Clients.ToListAsync());
         }
+        [HttpGet("full")]
+        public async Task<ActionResult> GetFullAsync()
+        {
+            return Ok(await _context.Clients
+                .Include(x => x.Oportunities!)
+                .ThenInclude(x => x.Activities)
+                .ToListAsync());
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult> GetAsync(int id)
+        {
+            var client = await _context.Clients
+                .Include(x => x.Oportunities!)
+                .ThenInclude(x => x.Activities)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (client is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(client);
+        }
+
 
         [HttpPost]
         public async Task<ActionResult> Post(Client client)

@@ -21,11 +21,11 @@ namespace CRM.Shared.Entities
         [Display(Name = "Fecha de inicio")]
         [MaxLength(15, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public DateTime CreatedDate { get; set; } = DateTime.Now!;
+        public string CreatedDate { get; set; } = null!;
 
         [Display(Name = "Fecha fin")]
         [MaxLength(4, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        public DateTime FinishDate { get; set; } = DateTime.Now!;
+        public string FinishDate { get; set; } = null!;
 
         [Display(Name = "Valor")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -33,5 +33,7 @@ namespace CRM.Shared.Entities
         public Client? Client { get; set; }
 
         public ICollection<Activity>? Activities { get; set; }
+
+        public int CleintId { get; set; }
     }
 }
