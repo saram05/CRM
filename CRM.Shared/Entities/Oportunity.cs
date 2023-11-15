@@ -30,6 +30,8 @@ namespace CRM.Shared.Entities
         [Display(Name = "Valor")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int Value { get; set; } = 0!;
+
+
         public Client? Client { get; set; }
 
         public ICollection<Activity>? Activities { get; set; }

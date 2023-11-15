@@ -5,6 +5,11 @@
 @inject NavigationManager navigationManager
 @inject ILoginService loginService
 
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization;
+@attribute [Authorize]
+
+
 @if (user is null)
 {
     <div class="spinner" />
