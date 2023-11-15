@@ -30,7 +30,7 @@ namespace CRM.Shared.Entities
         public string Address { get; set; } = null!;
 
         [Display(Name = "Teléfono")]
-        [MaxLength(4, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
+        [MaxLength(10, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         public virtual string? PhoneNumber { get; set; }
 
         [Display(Name = "Correo electrónico")]

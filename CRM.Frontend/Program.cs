@@ -1,3 +1,4 @@
+using Blazored.Modal;
 using CRM.Frontend;
 using CRM.Frontend.Auth;
 using CRM.Frontend.Repositories;
@@ -14,6 +15,7 @@ builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("http
 
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddSweetAlert2();
+builder.Services.AddBlazoredModal();
 builder.Services.AddAuthorizationCore();
 /*Implementamos el proveedor de autenticación*/
 builder.Services.AddScoped<AuthenticationProviderJWT>();

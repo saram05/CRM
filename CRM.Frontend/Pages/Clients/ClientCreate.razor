@@ -6,13 +6,16 @@
 @using Microsoft.AspNetCore.Components.Authorization;
 @attribute [Authorize]
 
-<h3>Crear País</h3>
+<h3>Crear cliente</h3>
 
 <ClientForm @ref="clientForm" Client="client" OnValidSubmit="Create" ReturnAction="Return" />
 
 @code {
     private Client client = new();
     private ClientForm? clientForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     private async Task Create()
     {
@@ -23,8 +26,10 @@
             await sweetAlertService.FireAsync("Error", message);
             return;
         }
-        clientForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo("/clients");
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
     }
 
     private void Return()

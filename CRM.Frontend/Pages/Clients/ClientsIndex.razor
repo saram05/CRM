@@ -1,21 +1,26 @@
 ﻿@page "/clients"
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization;
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@inject IRepository repository
 @attribute [Authorize]
 
-
-@inject IRepository repository
-
-<h3>Clientes</h3>
-
-<a class="btn btn-primary" href="/clients/create">Nuevo cliente</a>
+<div class="card-header">
+    <span>
+        <i class="oi oi-list"></i> Clientes
+        <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModal())><i class="oi oi-plus"></i> Adicionar Cliente</a>
+    </span>
+</div>
 
 <GenericList MyList="Clients">
     <Body>
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Correo electrónico</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -24,11 +29,17 @@
                 {
                     <tr>
                         <td>
-                            @client.Name
+                            @client.Document @client.Name
                         </td>
                         <td>
-                            <a class="btn btn-warning">Editar</a>
-                            <button class="btn btn-danger">Borrar</button>
+                            @client.PhoneNumber
+                        </td>
+                        <td>
+                            @client.Email
+                        </td>
+                        <td>
+                            <a @onclick=@(() => ShowModal(client.Id, true)) class="btn btn-warning"><i class="oi oi-pencil" /> Editar</a>
+                            <button class="btn btn-danger" @onclick=@(() => Delete(client.Id))><i class="oi oi-trash" /> Borrar</button>
                         </td>
                     </tr>
                 }
@@ -41,9 +52,66 @@
 @code {
     public List<Client>? Clients { get; set; }
 
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
     protected async override Task OnInitializedAsync()
     {
         var responseHppt = await repository.Get<List<Client>>("api/clients");
         Clients = responseHppt.Response!;
+    }
+    private async Task ShowModal(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (isEdit)
+        {
+            modalReference = Modal.Show<ClientEdit>(string.Empty, new ModalParameters().Add("ClientId", id));
+        }
+        else
+        {
+            modalReference = Modal.Show<ClientCreate>();
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await OnInitializedAsync();
+        }
+    }
+
+    private async Task Delete(int clientId)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Esta seguro que quieres borrar el registro?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHTTP = await repository.Delete($"api/clients/{clientId}");
+
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/");
+            }
+            else
+            {
+                var mensajeError = await responseHTTP.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            }
+        }
+
+        await OnInitializedAsync();
     }
 }

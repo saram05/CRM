@@ -18,7 +18,7 @@ namespace CRM.API.Data
         {
             await _context.Database.EnsureCreatedAsync();
             await CheckRolesAsync();
-            await CheckUserAsync("Juan", "Zuluaga", "zulu@yopmail.com", UserType.Admin);
+            await CheckUserAsync("admin", "admin", "admin@yopmail.com", UserType.Admin);
         }
 
         private async Task<Users> CheckUserAsync(string firstName, string lastName, string email, UserType userType)
