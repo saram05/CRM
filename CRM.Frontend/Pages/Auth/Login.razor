@@ -6,40 +6,37 @@
 @inject NavigationManager navigationManager
 @inject ILoginService loginService
 
-<div class="row">
-    <div class="col-md-4  offset-md-4">
-        <EditForm Model="loginDTO" OnValidSubmit="LoginAsync">
-            <DataAnnotationsValidator />
+<div class="body">
+    <EditForm Model="loginDTO" OnValidSubmit="LoginAsync">
+        <DataAnnotationsValidator />
 
-            <div class="card bg-light">
-                <div class="card-header justify-content-center">
-                    <span>
-                        <i class="oi oi-account-login" /> Iniciar Sesión
-                        <button class="btn btn-sm btn-primary float-end" type="submit"><i class="oi oi-check" /> Iniciar Sesión</button>
-                    </span>
-                </div>
-                <div class="card-body">
-
-                    <div class="mb-3">
-                        <label>Email:</label>
-                        <div>
-                            <InputText class="form-control" @bind-Value="@loginDTO.Email" />
-                            <ValidationMessage For="@(() => loginDTO.Email)" />
-                        </div>
+        <div class="contenedor">
+            <div class="contenedor-img">
+                <img src="logotipo-arana.png" alt="Imagen del logo de la página" />
+            </div>
+            <b><h2>Login - CRM Spider</h2></b>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div>
+                        <InputText placeholder="Email" class="form-control" @bind-Value="@loginDTO.Email" />
+                        <ValidationMessage For="@(() => loginDTO.Email)" />
                     </div>
-                    <div class="mb-3">
-                        <label>Contraseña:</label>
-                        <div>
-                            <InputText type="password" class="form-control" @bind-Value="@loginDTO.Password" />
-                            <ValidationMessage For="@(() => loginDTO.Password)" />
-                        </div>
+                </div>
+                <div class="mb-3">
+                    <div>
+                        <InputText type="password" placeholder="Contraseña" class="form-control" @bind-Value="@loginDTO.Password" />
+                        <ValidationMessage For="@(() => loginDTO.Password)" />
                     </div>
                 </div>
             </div>
-        </EditForm>
-    </div>
-</div>
+            <div class="justify-content-center">
+                <button class="btn btn-primary" type="submit">Iniciar Sesión</button>
+            </div>
 
+            <a href="Register" class="nav-link btn btn-link">Registrarse</a>
+        </div>
+    </EditForm>
+</div>
 @code {
     private LoginDTO loginDTO = new();
 

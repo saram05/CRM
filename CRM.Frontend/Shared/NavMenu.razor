@@ -1,14 +1,17 @@
-﻿@*<div class="nav-img">
-    <div class="img">
-        <img src="spyder_mask.png" />
-    </div>
-    <a class="title" href="">SPYDER</a>
-</div>
-*@
+﻿
+
 <div class="@NavMenuCssClass">
     <ul class="nav flex-column">
         <li class="nav-item px-3">
-            <NavLink class="nav-link" @onclick="() => ToggleNavMenu(NavSubmenu.None)" href="" Match="NavLinkMatch.All">
+            <div class="display-flex">
+                <div class="img">
+                    <img src="spyder_mask.png" />
+                </div>
+                <label>SPIDER</label>
+            </div>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="() => ToggleNavMenu(NavSubmenu.None)" href="Index" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Inicio
             </NavLink>
         </li>

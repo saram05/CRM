@@ -74,7 +74,7 @@ else
         {
             if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                navigationManager.NavigateTo("/");
+                navigationManager.NavigateTo("/Index");
                 return;
             }
             var messageError = await responseHTTP.GetErrorMessageAsync();
@@ -94,6 +94,6 @@ else
             return;
         }
 
-        navigationManager.NavigateTo("/");
+        navigationManager.NavigateTo("/Index");
     }
 }

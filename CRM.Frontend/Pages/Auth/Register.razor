@@ -3,8 +3,7 @@
 @inject SweetAlertService sweetAlertService
 @inject NavigationManager navigationManager
 @inject ILoginService loginService
-
-<h3>Registrar Nuevo Usuario</h3>
+@layout LoginLayout
 
 <EditForm Model="userDTO" OnValidSubmit="CreteUserAsync">
     <DataAnnotationsValidator />
@@ -13,6 +12,7 @@
             <span>
                 <i class="oi oi-person" /> Registrar Nuevo  Usuario
                 <button class="btn btn-sm btn-primary float-end" type="submit"><i class="oi oi-check" /> Registrar</button>
+                <a class="btn btn-sm btn-success float-end" href="/"><i class="oi oi-arrow-thick-left" /> Volver</a>
             </span>
         </div>
         <div class="card-body">
