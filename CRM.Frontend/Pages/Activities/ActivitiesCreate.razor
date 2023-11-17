@@ -1,0 +1,46 @@
+﻿@page "/activities/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization;
+@attribute [Authorize]
+
+<h3>Crear actividad</h3>
+
+<ActivitiesForm @ref="activityForm" Activity="Activity" OnValidSubmit="Create" ReturnAction="Return" />
+
+@code {
+    private Activity Activity = new();
+    private ActivitiesForm? activityForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private async Task Create()
+    {
+        try
+        {
+            var responseHttp = await repository.Post("/api/activities", Activity);
+            if (responseHttp.Error)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message);
+                return;
+            }
+            await BlazoredModal.CloseAsync(ModalResult.Ok());
+            Return();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/activities");
+    }
+}
+

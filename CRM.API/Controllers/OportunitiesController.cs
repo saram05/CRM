@@ -24,7 +24,12 @@ namespace CRM.API.Controllers
         {
             return Ok(await _context.Oportunities.ToListAsync());
         }
-
+        [AllowAnonymous]
+        [HttpGet("combo")]
+        public async Task<ActionResult> GetCombo()
+        {
+            return Ok(await _context.Oportunities.ToListAsync());
+        }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAsync(int id)
@@ -62,7 +67,7 @@ namespace CRM.API.Controllers
             {
                 if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                 {
-                    return BadRequest("Ya existe una ciudad con el mismo nombre.");
+                    return BadRequest("Ya existe una oportunidad con el mismo nombre.");
                 }
 
                 return BadRequest(dbUpdateException.Message);

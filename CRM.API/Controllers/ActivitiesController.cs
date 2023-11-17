@@ -11,71 +11,84 @@ namespace CRM.API.Controllers
     {
         private readonly DataContext _context;
 
-        //public ActivitiesController(DataContext context)
-        //{
-        //    _context = context;
-        //}
+        public ActivitiesController(DataContext context)
+        {
+            _context = context;
+        }
 
-        //[HttpGet("{id:int}")]
-        //public async Task<ActionResult> Get(int id)
-        //{
-        //    var activity = await _context.Activities.FirstOrDefaultAsync(x => x.Id == id);
-        //    if (activity is null)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpGet]
+        public async Task<ActionResult> Get()
+        {
+            return Ok(await _context.Activities.ToListAsync());
+        }
 
-        //    return Ok(activity);
-        //}
 
-        //[HttpPut]
-        //public async Task<ActionResult> Put(Activity activity)
-        //{
-        //    try
-        //    {
-        //        _context.Update(activity);
-        //        await _context.SaveChangesAsync();
-        //        return Ok(activity);
-        //    }
-        //    catch (DbUpdateException dbUpdateException)
-        //    {
-        //        return BadRequest(dbUpdateException.Message);
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        return BadRequest(exception.Message);
-        //    }
-        //}
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetAsync(int id)
+        {
+            var activity = await _context.Activities
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (activity == null)
+            {
+                return NotFound();
+            }
 
-        //[HttpDelete("{id:int}")]
-        //public async Task<ActionResult> Delete(int id)
-        //{
-        //    var afectedRows = await _context.Activities
-        //        .Where(x => x.Id == id)
-        //        .ExecuteDeleteAsync();
+            return Ok(activity);
+        }
 
-        //    if (afectedRows == 0)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpPost]
+        public async Task<ActionResult> PostAsync(Activity activity)
+        {
+            try
+            {
+                Activity newActivity = new()
+                {
+                    Name = activity.Name,
+                    StartDate = activity.StartDate,
+                    FinishDate = activity.FinishDate,
+                    Observations = activity.Observations,
+                    OportunityId = activity.OportunityId,
+                    Type = activity.Type
+                };
 
-        //    return NoContent();
-        //}
 
-        //[HttpGet]
-        //public async Task<ActionResult> Get()
-        //{
-        //    return Ok(await _context.Oportunities
-        //        .Include(x => x.Activities)
-        //        .ToListAsync());
-        //}
+                _context.Add(newActivity);
+                await _context.SaveChangesAsync();
+                return Ok(activity);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+        }
 
-        //[HttpPost]
-        //public async Task<ActionResult> Post(Activity activity)
-        //{
-        //    _context.Add(activity);
-        //    await _context.SaveChangesAsync();
-        //    return Ok(activity);
-        //}
+        [HttpPut]
+        public async Task<ActionResult> PutAsync(Activity activity)
+        {
+            try
+            {
+                _context.Update(activity);
+                await _context.SaveChangesAsync();
+                return Ok(activity);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var activity = await _context.Activities.FirstOrDefaultAsync(x => x.Id == id);
+            if (activity == null)
+            {
+                return NotFound();
+            }
+
+            _context.Remove(activity);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
