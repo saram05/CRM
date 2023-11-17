@@ -1,0 +1,65 @@
+﻿@page "/oportunities/edit/{OportunityId:int}"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<h3>Editar oportunidad</h3>
+
+@if (oportunity is null)
+{
+    <div class="spinner" />
+}
+else
+{
+    <OportunityForm @ref="oportunityForm" Oportunity="oportunity" OnValidSubmit="EditAsync" ReturnAction="Return" />
+}
+
+@code {
+    private Oportunity? oportunity;
+    private OportunityForm? oportunityForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public int OportunityId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHttp = await repository.Get<Oportunity>($"/api/oportunities/{OportunityId}");
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/oportunities");
+                return;
+            }
+
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        oportunity = responseHttp.Response;
+    }
+
+    private async Task EditAsync()
+    {
+        var responseHttp = await repository.Put("/api/oportunities", oportunity);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+    }
+
+    private void Return()
+    {
+        oportunityForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/oportunities");
+    }
+}

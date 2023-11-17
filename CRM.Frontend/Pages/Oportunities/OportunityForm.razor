@@ -1,0 +1,120 @@
+﻿@inject SweetAlertService sweetAlertService
+@inject IRepository repository
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization;
+@attribute [Authorize]
+
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"></NavigationLock>
+
+
+<EditForm OnValidSubmit="OnValidSubmit" Model="Oportunity">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+
+        <label>Nombre</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Oportunity.Name" />
+            <ValidationMessage For="@(() => Oportunity.Name)" />
+        </div>
+        <label>Fecha de inicio</label>
+        <div>
+            <InputDate class="form-control" @bind-Value="@Oportunity.CreatedDate" />
+            <ValidationMessage For="@(() => Oportunity.CreatedDate)" />
+        </div>
+        <label>Fecha fin</label>
+        <div>
+            <InputDate class="form-control" @bind-Value="@Oportunity.FinishDate" />
+            <ValidationMessage For="@(() => Oportunity.FinishDate)" />
+        </div>
+        <label>$ Valor</label>
+        <div>
+            <InputNumber class="form-control" @bind-Value="@Oportunity.Value" />
+            <ValidationMessage For="@(() => Oportunity.Value)" />
+        </div>
+        <label>Cliente</label>
+        <div>
+            <select class="form-select" @bind="Oportunity.ClientId">
+                <option value="0">-- Seleccione cliente --</option>
+                @if (clients is not null)
+                {
+                    @foreach (var client in clients)
+                    {
+                        <option value="@client.Id">@client.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        <br />
+        <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+        <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
+    </div>
+</EditForm>
+
+@code {
+    private EditContext editContext = null!;
+    private List<Client>? clients;
+
+    [EditorRequired]
+    [Parameter]
+    public Oportunity Oportunity { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool FormPostedSuccessfully { get; set; } = false;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadClientsAsync();
+    }
+
+    private async Task LoadClientsAsync()
+    {
+        var responseHttp = await repository.Get<List<Client>>("/api/clients/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        clients = responseHttp.Response;
+    }
+
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var formWasEdited = editContext.IsModified();
+
+        if (!formWasEdited)
+        {
+            return;
+        }
+
+        if (FormPostedSuccessfully)
+        {
+            return;
+        }
+
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Deseas abandonar la página y perder los cambios?",
+                Icon = SweetAlertIcon.Warning,
+                ShowCancelButton = true
+            });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+    }
+}

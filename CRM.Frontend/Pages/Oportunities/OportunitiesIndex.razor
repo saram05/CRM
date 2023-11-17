@@ -1,0 +1,114 @@
+﻿@page "/oportunities"
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization;
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@inject IRepository repository
+@attribute [Authorize]
+
+<div class="card-header">
+    <span>
+        <i class="oi oi-list"></i> Oportunidades
+        <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModal())><i class="oi oi-plus"></i> Adicionar Oportunidad</a>
+    </span>
+</div>
+
+<GenericList MyList="Oportunities">
+    <Body>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Valor en pesos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var oportunity in Oportunities!)
+                {
+                    <tr>
+                        <td>
+                            @oportunity.Id @oportunity.Name
+                        </td>
+                        <td>
+                            @oportunity.Value
+                        </td>
+                        <td>
+                            <a @onclick=@(() => ShowModal(oportunity.Id, true)) class="btn btn-warning"><i class="oi oi-pencil" /> Editar</a>
+                            <button class="btn btn-danger" @onclick=@(() => Delete(oportunity.Id))><i class="oi oi-trash" /> Borrar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </Body>
+</GenericList>
+
+
+@code {
+    public List<Oportunity>? Oportunities { get; set; }
+
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var responseHppt = await repository.Get<List<Oportunity>>("api/oportunities");
+        Oportunities = responseHppt.Response!;
+    }
+
+    private async Task ShowModal(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (isEdit)
+        {
+            modalReference = Modal.Show<OportunityEdit>(string.Empty, new ModalParameters().Add("OportunityId", id));
+        }
+        else
+        {
+            modalReference = Modal.Show<OportunityCreate>();
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await OnInitializedAsync();
+        }
+    }
+
+    private async Task Delete(int oportunityId)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Esta seguro que quieres borrar el registro?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHTTP = await repository.Delete($"api/oportunities/{oportunityId}");
+
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/");
+            }
+            else
+            {
+                var mensajeError = await responseHTTP.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            }
+        }
+
+        await OnInitializedAsync();
+    }
+}

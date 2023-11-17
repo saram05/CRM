@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231110235005_ChangeDateOportunity")]
-    partial class ChangeDateOportunity
+    [Migration("20231117034825_opo")]
+    partial class opo
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,42 +24,6 @@ namespace CRM.API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CRM.Shared.Entities.Activity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasMaxLength(15)
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(70)
-                        .HasColumnType("nvarchar(70)");
-
-                    b.Property<DateTime>("FinishDate")
-                        .HasMaxLength(4)
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Observations")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("OportunityId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OportunityId");
-
-                    b.ToTable("Activities");
-                });
 
             modelBuilder.Entity("CRM.Shared.Entities.Client", b =>
                 {
@@ -90,8 +54,8 @@ namespace CRM.API.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.HasKey("Id");
 
@@ -109,33 +73,27 @@ namespace CRM.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CleintId")
+                    b.Property<int>("ClientId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ClientId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedDate")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("FinishDate")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
+                    b.Property<DateTime>("FinishDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar(70)");
 
-                    b.Property<int>("Value")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Oportunities");
                 });
@@ -351,26 +309,6 @@ namespace CRM.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CRM.Shared.Entities.Activity", b =>
-                {
-                    b.HasOne("CRM.Shared.Entities.Oportunity", "Oportunity")
-                        .WithMany("Activities")
-                        .HasForeignKey("OportunityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Oportunity");
-                });
-
-            modelBuilder.Entity("CRM.Shared.Entities.Oportunity", b =>
-                {
-                    b.HasOne("CRM.Shared.Entities.Client", "Client")
-                        .WithMany("Oportunities")
-                        .HasForeignKey("ClientId");
-
-                    b.Navigation("Client");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -420,16 +358,6 @@ namespace CRM.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("CRM.Shared.Entities.Client", b =>
-                {
-                    b.Navigation("Oportunities");
-                });
-
-            modelBuilder.Entity("CRM.Shared.Entities.Oportunity", b =>
-                {
-                    b.Navigation("Activities");
                 });
 #pragma warning restore 612, 618
         }

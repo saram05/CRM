@@ -1,0 +1,38 @@
+﻿@page "/oportunities/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization;
+@attribute [Authorize]
+
+<h3>Crear oportunidad</h3>
+
+<OportunityForm @ref="oportunityForm" Oportunity="Oportunity" OnValidSubmit="Create" ReturnAction="Return" />
+
+@code {
+    private Oportunity Oportunity = new();
+    private OportunityForm? oportunityForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private async Task Create()
+    {
+        var responseHttp = await repository.Post("/api/oportunities", Oportunity);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message);
+            return;
+        }
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/oportunities");
+    }
+}
+

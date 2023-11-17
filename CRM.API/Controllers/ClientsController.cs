@@ -38,6 +38,13 @@ namespace CRM.API.Controllers
             return Ok(client);
         }
 
+        [AllowAnonymous]
+        [HttpGet("combo")]
+        public async Task<ActionResult> GetCombo()
+        {
+            return Ok(await _context.Clients.ToListAsync());
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post(Client client)
         {

@@ -1,11 +1,14 @@
 ﻿using CRM.API.Data;
 using CRM.Shared.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRM.API.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("/api/oportunities")]
     public class OportunitiesController : ControllerBase
     {
@@ -16,20 +19,62 @@ namespace CRM.API.Controllers
             _context = context;
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult> Get(int id)
+        [HttpGet]
+        public async Task<ActionResult> Get()
         {
-            var oportunity = await _context.Oportunities.FirstOrDefaultAsync(x => x.Id == id);
-            if (oportunity is null)
+            return Ok(await _context.Oportunities.ToListAsync());
+        }
+
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetAsync(int id)
+        {
+            var product = await _context.Oportunities
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return Ok(oportunity);
+            return Ok(product);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> PostAsync(Oportunity oportunity)
+        {
+            try
+            {
+                Oportunity newOportunity = new()
+                {
+                    Name = oportunity.Name,
+                    CreatedDate = oportunity.CreatedDate,
+                    FinishDate = oportunity.FinishDate,
+                    Value = oportunity.Value,
+                    ClientId = oportunity.ClientId,
+                };
+
+
+                _context.Add(newOportunity);
+                await _context.SaveChangesAsync();
+                return Ok(oportunity);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe una ciudad con el mismo nombre.");
+                }
+
+                return BadRequest(dbUpdateException.Message);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
         }
 
         [HttpPut]
-        public async Task<ActionResult> Put(Oportunity oportunity)
+        public async Task<ActionResult> PutAsync(Oportunity oportunity)
         {
             try
             {
@@ -39,6 +84,11 @@ namespace CRM.API.Controllers
             }
             catch (DbUpdateException dbUpdateException)
             {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe una oportunidad con el mismo nombre.");
+                }
+
                 return BadRequest(dbUpdateException.Message);
             }
             catch (Exception exception)
@@ -48,34 +98,17 @@ namespace CRM.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            var afectedRows = await _context.Oportunities
-                .Where(x => x.Id == id)
-                .ExecuteDeleteAsync();
-
-            if (afectedRows == 0)
+            var oportunity = await _context.Oportunities.FirstOrDefaultAsync(x => x.Id == id);
+            if (oportunity == null)
             {
                 return NotFound();
             }
 
-            return NoContent();
-        }
-
-        [HttpGet]
-        public async Task<ActionResult> Get()
-        {
-            return Ok(await _context.Oportunities
-                .Include(x => x.Activities)
-                .ToListAsync());
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> Post(Oportunity oportunity)
-        {
-            _context.Add(oportunity);
+            _context.Remove(oportunity);
             await _context.SaveChangesAsync();
-            return Ok(oportunity);
+            return NoContent();
         }
     }
 }

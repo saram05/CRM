@@ -18,8 +18,8 @@ namespace CRM.API.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", maxLength: 15, nullable: false),
-                    FinishDate = table.Column<DateTime>(type: "datetime2", maxLength: 4, nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FinishDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Value = table.Column<int>(type: "int", nullable: false),
                     ClientId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -41,8 +41,8 @@ namespace CRM.API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
                     Observations = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", maxLength: 15, nullable: false),
-                    FinishDate = table.Column<DateTime>(type: "datetime2", maxLength: 4, nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FinishDate = table.Column<DateTime>(type: "datetime2",  nullable: false),
                     OportunityId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
